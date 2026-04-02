@@ -1,0 +1,124 @@
+{
+  "capacidades": [
+    {
+      "modelo": "Boeing 737-700",
+      "fabricante": "Boeing",
+      "capacidade": 149,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Boeing 737-800",
+      "fabricante": "Boeing",
+      "capacidade": 162,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Boeing 737-900",
+      "fabricante": "Boeing",
+      "capacidade": 180,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Boeing 737 MAX 8",
+      "fabricante": "Boeing",
+      "capacidade": 162,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Airbus A320-200",
+      "fabricante": "Airbus",
+      "capacidade": 180,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Airbus A320neo",
+      "fabricante": "Airbus",
+      "capacidade": 165,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Airbus A321-200",
+      "fabricante": "Airbus",
+      "capacidade": 220,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Airbus A319-100",
+      "fabricante": "Airbus",
+      "capacidade": 150,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Embraer E190",
+      "fabricante": "Embraer",
+      "capacidade": 114,
+      "classe": "regional"
+    },
+    {
+      "modelo": "Embraer E195",
+      "fabricante": "Embraer",
+      "capacidade": 124,
+      "classe": "regional"
+    },
+    {
+      "modelo": "Embraer E170",
+      "fabricante": "Embraer",
+      "capacidade": 78,
+      "classe": "regional"
+    },
+    {
+      "modelo": "Embraer E175",
+      "fabricante": "Embraer",
+      "capacidade": 88,
+      "classe": "regional"
+    },
+    {
+      "modelo": "ATR 72-600",
+      "fabricante": "ATR",
+      "capacidade": 78,
+      "classe": "turboprop"
+    },
+    {
+      "modelo": "ATR 42-600",
+      "fabricante": "ATR",
+      "capacidade": 50,
+      "classe": "turboprop"
+    },
+    {
+      "modelo": "Bombardier CRJ-900",
+      "fabricante": "Bombardier",
+      "capacidade": 90,
+      "classe": "regional"
+    },
+    {
+      "modelo": "Bombardier Q400",
+      "fabricante": "Bombardier",
+      "capacidade": 78,
+      "classe": "turboprop"
+    },
+    {
+      "modelo": "Boeing 757-200",
+      "fabricante": "Boeing",
+      "capacidade": 200,
+      "classe": "narrow-body"
+    },
+    {
+      "modelo": "Boeing 767-300",
+      "fabricante": "Boeing",
+      "capacidade": 270,
+      "classe": "wide-body"
+    },
+    {
+      "modelo": "Airbus A330-300",
+      "fabricante": "Airbus",
+      "capacidade": 294,
+      "classe": "wide-body"
+    },
+    {
+      "modelo": "Airbus A330-900",
+      "fabricante": "Airbus",
+      "capacidade": 298,
+      "classe": "wide-body"
+    }
+  ]
+}
