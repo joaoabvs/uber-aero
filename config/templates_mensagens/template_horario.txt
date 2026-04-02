@@ -1,0 +1,12 @@
+🏢 Aeroporto: Brasília (BSB)
+🕐 Atualização: {DATA} às {HORA_ATUAL}
+
+━━━━━━━━━━━━━━━━━━━━
+FLUXO AGORA ({HORA_ATUAL}):
+✈️ {VOOS_ATUAL} voos
+👥 ~{PASSAGEIROS_ATUAL} passageiros
+━━━━━━━━━━━━━━━━━━━━
+PRÓXIMA HORA ({HORA_PROXIMA}):
+✈️ {VOOS_PROXIMA} voos
+👥 ~{PASSAGEIROS_PROXIMA} passageiros
+━━━━━━━━━━━━━━━━━━━━

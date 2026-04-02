@@ -1,0 +1,12 @@
+🏢 Aeroporto: Brasília (BSB)
+📅 Data: {DATA} 
+✈️ Total de Voos: {TOTAL_VOOS} 
+👥 Total de Passageiros: {TOTAL_PASSAGEIROS}
+🔥 Melhor hora: {MELHOR_HORA} ({PASSAGEIROS_PICO} pass.)
+
+━━━━━━━━━━━━━━━━━━━━
+MOVIMENTO POR HORA:
+━━━━━━━━━━━━━━━━━━━━
+
+{HORARIOS_COM_MOVIMENTO}
+

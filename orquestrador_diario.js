@@ -1,0 +1,149 @@
+#!/usr/bin/env node
+
+/**
+ * 🚗 FluxoUber - Orquestrador Diário
+ * Executa: 1) Busca de voos 2) Salva em arquivo JSON 3) Envio de alerta Telegram
+ *
+ * Uso:
+ *   node orquestrador.js                 (usa data de hoje)
+ *   node orquestrador.js 2026-03-30      (usa data especificada)
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { fetchFlightsByDay } = require('./lib/busca_voos');
+const { generateMessage, sendToTelegram } = require('./lib/notificador_telegram');
+const { processarVoos } = require('./lib/processador_voo');
+const logger = require('./lib/logger');
+
+const template = '../config/templates_mensagens/template_diario.txt';
+const icao = 'SBBR';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📅 DETERMINAR DATA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function obterDataAtual() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+let data = process.argv[2] || obterDataAtual();
+
+// Validar formato da data
+if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+  logger.error('❌ ERRO: Formato de data inválido. Use: YYYY-MM-DD');
+  logger.error('');
+  logger.error('Exemplos:');
+  logger.error('  node orquestrador.js                           (data de hoje, template padrão)');
+  logger.error('  node orquestrador.js 2026-03-30                (data específica, template padrão)');
+  logger.error('  node orquestrador.js 2026-03-30 template_resumido.txt (data específica, template customizado)');
+  process.exit(1);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🚀 EXECUTAR PIPELINE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+async function executarPipeline() {
+  logger.info('');
+  logger.info('═'.repeat(80));
+  logger.info('🚗 FluxoUber - Pipeline Diário');
+  logger.info('═'.repeat(80));
+  logger.info('');
+  logger.info(`📅 Data: ${data}`);
+  logger.info('');
+
+  const options = {
+    direction      : 'Arrival',
+    withCodeshared : true,
+    withCargo      : false,
+    withPrivate    : false
+  };
+
+  try {
+    // 1️⃣ BUSCAR DADOS DE VOOS
+    logger.info('─'.repeat(80));
+    logger.info('1️⃣  ETAPA 1: Buscando dados de voos...');
+    logger.info('─'.repeat(80));
+    logger.info('');
+
+    const flightData = await fetchFlightsByDay(icao, data, options);
+
+    if (!flightData) {
+      logger.error('❌ Falha ao buscar dados dos voos');
+      process.exit(1);
+    }
+
+    const flights = flightData.arrivals || [];
+
+    if (!flights || flights.length === 0) {
+      logger.error('❌ Nenhum voo encontrado para essa data');
+      process.exit(1);
+    }
+
+    logger.info(`✅ ${flights.length} voos encontrados!`);
+    logger.info('');
+
+    // 3️⃣ PROCESSAR E ENVIAR PARA TELEGRAM
+    logger.info('─'.repeat(80));
+    logger.info('3️⃣  ETAPA 3: Processando e enviando para Telegram...');
+    logger.info('─'.repeat(80));
+    logger.info('');
+
+    logger.info('⚙️ Processando dados...');
+    const processedData = processarVoos(flights, icao, data, 2025);
+    logger.info(`✅ Total: ${processedData.totalVoos} voos, ~${processedData.totalPassageiros.toLocaleString('pt-BR')} passageiros estimados`);
+    logger.info('');
+
+    logger.info(`📝 Gerando mensagem (template: ${template})...`);
+    const message = generateMessage(processedData, data, template);
+    logger.info('✅ Mensagem gerada!');
+    logger.info('');
+
+    logger.info('📤 Enviando para Telegram...');
+    await sendToTelegram(message);
+    logger.info('✅ Mensagem enviada com sucesso!');
+    logger.info('');
+
+    // 2️⃣ SALVAR EM ARQUIVO JSON
+    logger.info('─'.repeat(80));
+    logger.info('2️⃣  ETAPA 2: Salvando dados em arquivo JSON...');
+    logger.info('─'.repeat(80));
+    logger.info('');
+
+    const filename = `voos_${icao}_${data}.json`;
+    fs.writeFileSync(filename, JSON.stringify(flightData, null, 2), 'utf-8');
+    logger.info(`✅ Dados salvos em: ${filename}`);
+    logger.info('');
+
+    logger.info('═'.repeat(80));
+    logger.info('✅ PIPELINE CONCLUÍDO COM SUCESSO!');
+    logger.info('═'.repeat(80));
+    logger.info('');
+    logger.info(`📊 Resumo:`);
+    logger.info(`  📅 Data: ${data}`);
+    logger.info(`  ✈️  ${flights.length} voos processados`);
+    logger.info(`  💾 Arquivo: ${filename}`);
+    logger.info(`  📤 Alerta enviado para Telegram`);
+    logger.info('');
+
+    process.exit(0);
+
+  } catch (error) {
+    logger.error('');
+    logger.error('═'.repeat(80));
+    logger.error('❌ ERRO NA PIPELINE');
+    logger.error('═'.repeat(80));
+    logger.error(error.message);
+    logger.error('═'.repeat(80));
+    logger.error('');
+    process.exit(1);
+  }
+}
+
+// Executar pipeline
+executarPipeline();
