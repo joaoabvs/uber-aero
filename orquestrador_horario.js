@@ -10,9 +10,9 @@
 
 const fs   = require('fs');
 const path = require('path');
-const { fetchFlightsRelative }    = require('./lib/busca_voos');
+const { buscarVoosRelativo }      = require('./lib/busca_voos');
 const { processarVoosPorJanela }  = require('./lib/processador_voo');
-const { sendToTelegram }          = require('./lib/notificador_telegram');
+const { enviarParaTelegram }      = require('./lib/notificador_telegram');
 const logger                   = require('./lib/logger');
 
 const ICAO          = 'SBBR';
@@ -83,7 +83,7 @@ async function executarPipeline() {
   try {
     // 1️⃣ BUSCAR: janela de 2h a partir de agora
     logger.info('Buscando voos em tempo real...');
-    const flightData = await fetchFlightsRelative(ICAO, {
+    const dadosVoos = await buscarVoosRelativo(ICAO, {
       direction      : 'Arrival',
       durationMinutes: 120,
       offsetMinutes  : 0,
@@ -92,31 +92,31 @@ async function executarPipeline() {
       withPrivate    : false
     });
 
-    if (!flightData?.arrivals?.length) {
+    if (!dadosVoos?.arrivals?.length) {
       throw new Error('Nenhum voo encontrado na janela atual');
     }
 
-    logger.info(`${flightData.arrivals.length} voos encontrados`);
+    logger.info(`${dadosVoos.arrivals.length} voos encontrados`);
 
     // 2️⃣ PROCESSAR por janela relativa ao momento de execução
     const { atual: fluxoAtual, proxima: fluxoProxima } =
-      processarVoosPorJanela(flightData.arrivals, ICAO, dataISO, 2025, inicioMs);
+      processarVoosPorJanela(dadosVoos.arrivals, ICAO, dataISO, 2025, inicioMs);
 
     logger.info(`Janela atual   ${labelAtual}: ${fluxoAtual.voos} voos, ~${fluxoAtual.passageiros} passageiros`);
     logger.info(`Próxima janela ${labelProxima}: ${fluxoProxima.voos} voos, ~${fluxoProxima.passageiros} passageiros`);
 
     // 3️⃣ GERAR E ENVIAR
     const mensagem = gerarMensagem({ horaAtual: labelAtual, horaProxima: labelProxima, fluxoAtual, fluxoProxima });
-    await sendToTelegram(mensagem);
+    await enviarParaTelegram(mensagem);
 
     logger.info('✅ Mensagem enviada com sucesso!');
     logger.info('═'.repeat(60));
 
     process.exit(0);
 
-  } catch (error) {
+  } catch (erro) {
     logger.error('═'.repeat(60));
-    logger.error(`❌ ERRO: ${error.message}`);
+    logger.error(`❌ ERRO: ${erro.message}`);
     logger.error('═'.repeat(60));
     process.exit(1);
   }

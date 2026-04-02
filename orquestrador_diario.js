@@ -11,8 +11,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { fetchFlightsByDay } = require('./lib/busca_voos');
-const { generateMessage, sendToTelegram } = require('./lib/notificador_telegram');
+const { buscarVoosPorDia } = require('./lib/busca_voos');
+const { gerarMensagem, enviarParaTelegram } = require('./lib/notificador_telegram');
 const { processarVoos } = require('./lib/processador_voo');
 const logger = require('./lib/logger');
 
@@ -57,7 +57,7 @@ async function executarPipeline() {
   logger.info(`📅 Data: ${data}`);
   logger.info('');
 
-  const options = {
+  const opcoes = {
     direction      : 'Arrival',
     withCodeshared : true,
     withCargo      : false,
@@ -71,21 +71,21 @@ async function executarPipeline() {
     logger.info('─'.repeat(80));
     logger.info('');
 
-    const flightData = await fetchFlightsByDay(icao, data, options);
+    const dadosVoos = await buscarVoosPorDia(icao, data, opcoes);
 
-    if (!flightData) {
+    if (!dadosVoos) {
       logger.error('❌ Falha ao buscar dados dos voos');
       process.exit(1);
     }
 
-    const flights = flightData.arrivals || [];
+    const listaVoos = dadosVoos.arrivals || [];
 
-    if (!flights || flights.length === 0) {
+    if (!listaVoos || listaVoos.length === 0) {
       logger.error('❌ Nenhum voo encontrado para essa data');
       process.exit(1);
     }
 
-    logger.info(`✅ ${flights.length} voos encontrados!`);
+    logger.info(`✅ ${listaVoos.length} voos encontrados!`);
     logger.info('');
 
     // 3️⃣ PROCESSAR E ENVIAR PARA TELEGRAM
@@ -95,17 +95,17 @@ async function executarPipeline() {
     logger.info('');
 
     logger.info('⚙️ Processando dados...');
-    const processedData = processarVoos(flights, icao, data, 2025);
-    logger.info(`✅ Total: ${processedData.totalVoos} voos, ~${processedData.totalPassageiros.toLocaleString('pt-BR')} passageiros estimados`);
+    const dadosProcessados = processarVoos(listaVoos, icao, data, 2025);
+    logger.info(`✅ Total: ${dadosProcessados.totalVoos} voos, ~${dadosProcessados.totalPassageiros.toLocaleString('pt-BR')} passageiros estimados`);
     logger.info('');
 
     logger.info(`📝 Gerando mensagem (template: ${template})...`);
-    const message = generateMessage(processedData, data, template);
+    const mensagem = gerarMensagem(dadosProcessados, data, template);
     logger.info('✅ Mensagem gerada!');
     logger.info('');
 
     logger.info('📤 Enviando para Telegram...');
-    await sendToTelegram(message);
+    await enviarParaTelegram(mensagem);
     logger.info('✅ Mensagem enviada com sucesso!');
     logger.info('');
 
@@ -115,9 +115,9 @@ async function executarPipeline() {
     logger.info('─'.repeat(80));
     logger.info('');
 
-    const filename = `voos_${icao}_${data}.json`;
-    fs.writeFileSync(filename, JSON.stringify(flightData, null, 2), 'utf-8');
-    logger.info(`✅ Dados salvos em: ${filename}`);
+    const nomeArquivo = `voos_${icao}_${data}.json`;
+    fs.writeFileSync(nomeArquivo, JSON.stringify(dadosVoos, null, 2), 'utf-8');
+    logger.info(`✅ Dados salvos em: ${nomeArquivo}`);
     logger.info('');
 
     logger.info('═'.repeat(80));
@@ -126,19 +126,19 @@ async function executarPipeline() {
     logger.info('');
     logger.info(`📊 Resumo:`);
     logger.info(`  📅 Data: ${data}`);
-    logger.info(`  ✈️  ${flights.length} voos processados`);
-    logger.info(`  💾 Arquivo: ${filename}`);
+    logger.info(`  ✈️  ${listaVoos.length} voos processados`);
+    logger.info(`  💾 Arquivo: ${nomeArquivo}`);
     logger.info(`  📤 Alerta enviado para Telegram`);
     logger.info('');
 
     process.exit(0);
 
-  } catch (error) {
+  } catch (erro) {
     logger.error('');
     logger.error('═'.repeat(80));
     logger.error('❌ ERRO NA PIPELINE');
     logger.error('═'.repeat(80));
-    logger.error(error.message);
+    logger.error(erro.message);
     logger.error('═'.repeat(80));
     logger.error('');
     process.exit(1);
