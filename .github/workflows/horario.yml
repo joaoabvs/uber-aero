@@ -1,0 +1,32 @@
+name: Orquestrador Horário
+
+on:
+  schedule:
+    # Roda todo hora (no minuto 0 de cada hora)
+    - cron: '0 * * * *'
+  workflow_dispatch: # permite rodar manualmente pelo GitHub
+
+jobs:
+  buscar-voos-horario:
+    runs-on: ubuntu-latest
+
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Executar orquestrador horário
+        run: node orquestrador_horario.js
