@@ -24,6 +24,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Verificar secrets configurados
+        run: |
+          if [ -z "$RAPIDAPI_KEY" ]; then echo "❌ RAPIDAPI_KEY não configurado!"; exit 1; fi
+          if [ -z "$TELEGRAM_BOT_TOKEN" ]; then echo "❌ TELEGRAM_BOT_TOKEN não configurado!"; exit 1; fi
+          if [ -z "$TELEGRAM_CHANNEL_ID" ]; then echo "❌ TELEGRAM_CHANNEL_ID não configurado!"; exit 1; fi
+          echo "✅ Todos os secrets estão configurados"
+
       - name: Instalar dependências
         run: npm install
 
