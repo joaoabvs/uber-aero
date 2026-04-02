@@ -26,6 +26,9 @@ build/
 # Test coverage
 coverage/
 
-*.json
+# JSON de saída (voos, temp, config gerado)
+voos_*.json
+teste.json
+5dbbbedb-*.json
 doc/
 *.command
