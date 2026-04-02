@@ -12,6 +12,7 @@ jobs:
     environment: main
 
     env:
+      TZ: America/Sao_Paulo
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
       RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
