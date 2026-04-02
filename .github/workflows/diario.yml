@@ -9,6 +9,7 @@ on:
 jobs:
   buscar-voos-diario:
     runs-on: ubuntu-latest
+    environment: main
 
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
