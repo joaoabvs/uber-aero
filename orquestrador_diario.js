@@ -95,7 +95,7 @@ async function executarPipeline() {
     logger.info('');
 
     logger.info('⚙️ Processando dados...');
-    const dadosProcessados = processarVoos(listaVoos, icao, data, 2025);
+    const dadosProcessados = processarVoos(listaVoos, icao, data, new Date().getFullYear() - 1);
     logger.info(`✅ Total: ${dadosProcessados.totalVoos} voos, ~${dadosProcessados.totalPassageiros.toLocaleString('pt-BR')} passageiros estimados`);
     logger.info('');
 

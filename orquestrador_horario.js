@@ -100,7 +100,7 @@ async function executarPipeline() {
 
     // 2️⃣ PROCESSAR por janela relativa ao momento de execução
     const { atual: fluxoAtual, proxima: fluxoProxima } =
-      processarVoosPorJanela(dadosVoos.arrivals, ICAO, dataISO, 2025, inicioMs);
+    processarVoosPorJanela(dadosVoos.arrivals, ICAO, dataISO, new Date().getFullYear() - 1, inicioMs);
 
     logger.info(`Janela atual   ${labelAtual}: ${fluxoAtual.voos} voos, ~${fluxoAtual.passageiros} passageiros`);
     logger.info(`Próxima janela ${labelProxima}: ${fluxoProxima.voos} voos, ~${fluxoProxima.passageiros} passageiros`);
