@@ -119,6 +119,12 @@
       "fabricante": "Airbus",
       "capacidade": 298,
       "classe": "wide-body"
+    },
+    {
+      "modelo": "E295",
+      "fabricante": "Embraer",
+      "capacidade": 136,
+      "classe": "narrow-body"
     }
   ]
 }
