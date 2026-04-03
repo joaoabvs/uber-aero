@@ -69,7 +69,9 @@ function gerarMensagem({ horaAtual, horaProxima, fluxoAtual, fluxoProxima }) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 async function executarPipeline() {
-  const inicioMs  = Date.now();
+  const _agora = new Date();
+  _agora.setMinutes(0, 0, 0);
+  const inicioMs  = _agora.getTime();
   const dataISO   = obterDataISO();
   const fmt       = ms => new Date(ms).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   const labelAtual   = `${fmt(inicioMs)} – ${fmt(inicioMs + 3600000)}`;
@@ -86,7 +88,7 @@ async function executarPipeline() {
     const dadosVoos = await buscarVoosRelativo(ICAO, {
       direction      : 'Arrival',
       durationMinutes: 120,
-      offsetMinutes  : 0,
+      offsetMinutes  : -new Date().getMinutes(),
       withCodeshared : true,
       withCargo      : false,
       withPrivate    : false
@@ -111,6 +113,11 @@ async function executarPipeline() {
 
     logger.info('✅ Mensagem enviada com sucesso!');
     logger.info('═'.repeat(60));
+
+    const nomeArquivo = `horario.json`;
+    fs.writeFileSync(nomeArquivo, JSON.stringify(dadosVoos, null, 2), 'utf-8');
+    logger.info(`✅ Dados salvos em: ${nomeArquivo}`);
+    logger.info('');
 
     process.exit(0);
 
