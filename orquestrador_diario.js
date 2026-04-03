@@ -23,15 +23,16 @@ const icao = 'SBBR';
 // 📅 DETERMINAR DATA
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function obterDataAtual() {
+function obterDataAmanha() {
   const hoje = new Date();
+  hoje.setDate(hoje.getDate() + 1); // soma 1 dia
   const ano = hoje.getFullYear();
   const mes = String(hoje.getMonth() + 1).padStart(2, '0');
   const dia = String(hoje.getDate()).padStart(2, '0');
   return `${ano}-${mes}-${dia}`;
 }
 
-let data = process.argv[2] || obterDataAtual();
+let data = process.argv[2] || obterDataAmanha();
 
 // Validar formato da data
 if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
